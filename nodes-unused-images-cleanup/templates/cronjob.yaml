@@ -1,0 +1,46 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ $.Values.CronJob.metadata.name }}
+  namespace: {{ $.Release.Namespace }}
+{{- if $.Values.CronJob.metadata.labels }}
+  labels:
+    {{- $.Values.CronJob.metadata.labels | trim | nindent 4 }}
+{{- end }}
+{{- if $.Values.CronJob.metadata.annotations }}
+  annotations:
+    {{- $.Values.CronJob.metadata.annotations | trim | nindent 4 }}
+{{- end }}
+spec:
+  schedule: "{{ $.Values.CronJob.spec.schedule }}"
+  successfulJobsHistoryLimit: {{ $.Values.CronJob.spec.successfulJobsHistoryLimit }}
+  failedJobsHistoryLimit: {{ $.Values.CronJob.spec.failedJobsHistoryLimit }}
+  suspend: {{ $.Values.CronJob.spec.suspend }}
+  concurrencyPolicy: {{ $.Values.CronJob.spec.concurrencyPolicy }}
+  jobTemplate:
+    spec:
+      backoffLimit: {{ $.Values.CronJob.spec.jobTemplate.spec.backoffLimit }}
+      ttlSecondsAfterFinished: {{ $.Values.CronJob.spec.jobTemplate.spec.ttlSecondsAfterFinished }}
+      template:
+        spec:
+          serviceAccountName: {{ $.Values.ServiceAccount.metadata.name }}
+          containers:
+          - name: {{ $.Values.CronJob.spec.jobTemplate.spec.template.spec.containers.name }}
+            image: {{ $.Values.CronJob.spec.jobTemplate.spec.template.spec.containers.image }}
+            command: [{{ $.Values.CronJob.spec.jobTemplate.spec.template.spec.containers.command }}]
+            args:
+              - > 
+                {{- $.Values.CronJob.spec.jobTemplate.spec.template.spec.containers.args | trim | nindent 16 }}
+            resources: 
+              {{- $.Values.CronJob.spec.jobTemplate.spec.template.spec.containers.resources | trim | nindent 14 }}
+            imagePullPolicy: {{ $.Values.CronJob.spec.jobTemplate.spec.template.spec.containers.imagePullPolicy }}
+            securityContext:
+              privileged: {{ $.Values.CronJob.spec.jobTemplate.spec.template.spec.containers.securityContext.privileged }}
+          dnsPolicy: {{ $.Values.CronJob.spec.jobTemplate.spec.template.spec.dnsPolicy }}
+          hostNetwork: {{ $.Values.CronJob.spec.jobTemplate.spec.template.spec.hostNetwork }}
+          restartPolicy: {{ $.Values.CronJob.spec.jobTemplate.spec.template.spec.restartPolicy }}
+          terminationGracePeriodSeconds: {{ $.Values.CronJob.spec.jobTemplate.spec.template.spec.terminationGracePeriodSeconds }}
+        {{- if $.Values.CronJob.spec.jobTemplate.spec.template.spec.nodeSelector }}
+          nodeSelector:
+            {{- $.Values.CronJob.spec.jobTemplate.spec.template.spec.nodeSelector | nindent 12 }}
+        {{- end }}

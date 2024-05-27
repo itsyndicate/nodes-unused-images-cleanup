@@ -1,0 +1,114 @@
+CronJob:
+  metadata:
+    name: nodes-unused-images-cleanup
+    # labels: |
+    #   app: my-app
+    # annotations: |
+    #   interesting-annotation: value
+  spec:
+    schedule: 0 8 * * *
+    successfulJobsHistoryLimit: 1
+    failedJobsHistoryLimit: 1
+    suspend: false
+    concurrencyPolicy: Forbid
+    jobTemplate:
+      spec:
+        backoffLimit: 0
+        ttlSecondsAfterFinished: 1000
+        template:
+          spec:
+            containers:
+              name: images-cleanup
+              image: YOUR_IMAGE
+              command: '"/bin/sh", "-c"'
+              args: |
+                for node in $(kubectl get nodes -o 'jsonpath={.items[*].metadata.name}'); do
+                  output=$(kubectl node-shell $node -- /bin/sh -c '
+                  all_images=$(ctr -n k8s.io images list -q | grep "YOUR_PATTERN")
+                  for image in $all_images; do
+                    if ! ctr -n k8s.io containers list | grep -q $image; then
+                      ctr -n k8s.io images rm "$image" 1> /dev/null || true
+                      echo -e "\033[33m\n\nRemoved image : $image\033[0m"
+                    else
+                      echo -e "\033[32m\n\nNo removal required for : $image\033[0m"
+                    fi
+                  done
+                  sleep 3
+                  ' 2>&1)
+                  echo -e "\n\n$output" | sed -e $'s/spawning.*/\033[36m&\033[0m/' -e $'s/[eE][rR][rR][oO][rR].*/\033[31m&\033[0m/' -e $'s/[wW][aA][rR][nN][iI][nN][gG].*/\033[31m&\033[0m/' | grep -E -v "enter|deleted"
+                done
+              resources: | 
+                requests:
+                  memory: 256Mi
+                  cpu: 100m
+                limits:
+                  memory: 256Mi
+                  cpu: 100m
+              imagePullPolicy: Always
+              securityContext:
+                privileged: true
+            dnsPolicy: ClusterFirst
+            hostNetwork: true
+            restartPolicy: Never
+            terminationGracePeriodSeconds: 30
+            # nodeSelector: |
+            #   kubernetes.io/os: linux
+
+
+
+ServiceAccount:
+  metadata:
+    name: nodes-unused-images-cleanup
+    # labels: |
+    #   app: my-app
+    # annotations: |
+    #   interesting-annotation: value
+
+
+
+ClusterRole:
+  metadata:
+    name: nodes-unused-images-cleanup
+    # labels: |
+    #   app: my-app
+    # annotations: |
+    #   interesting-annotation: value
+  rules: |
+    - apiGroups:
+      - ""
+      resources:
+      - nodes
+      - pods
+      verbs:
+      - get
+      - list
+      - watch
+    - apiGroups:
+      - ""
+      resources:
+      - pods
+      verbs:
+      - create
+      - delete
+    - apiGroups:
+      - ""
+      resources:
+      - pods/log
+      verbs:
+      - get
+    - apiGroups:
+      - ""
+      resources:
+      - pods/attach
+      verbs:
+      - create
+
+
+
+ClusterRoleBinding:
+  metadata:
+    name: nodes-unused-images-cleanup
+    # labels: |
+    #   app: my-app
+    # annotations: |
+    #   interesting-annotation: value

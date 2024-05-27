@@ -1,0 +1,14 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ $.Values.ClusterRole.metadata.name }}
+{{- if $.Values.ClusterRole.metadata.labels }}
+  labels:
+    {{- $.Values.ClusterRole.metadata.labels | trim | nindent 4 }}
+{{- end }}
+{{- if $.Values.ClusterRole.metadata.annotations }}
+  annotations:
+    {{- $.Values.ClusterRole.metadata.annotations | trim | nindent 4 }}
+{{- end }}
+rules:
+  {{- $.Values.ClusterRole.rules | nindent 2 }}

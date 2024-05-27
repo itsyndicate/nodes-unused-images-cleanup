@@ -1,0 +1,12 @@
+apiVersion: v2
+name: nodes-unused-images-cleanup
+version: 0.1.0
+description: this Chart deploys a CronJob which deletes unused images on K8s nodes
+type: application
+appVersion: "0.1.0"
+
+keywords:
+  - nodes-unused-images-cleanup
+
+maintainers:
+  - name: plain5 (https://github.com/plain5)
