@@ -62,10 +62,10 @@ docker build -t ${NAME}:${TAG} .
 * Generate `helm template` before deployment (set `release name / namespace` as you wish) :
 
 ```
-helm template nodes-unused-images-cleanup .\nodes-unused-images-cleanup\ --create-namespace --namespace nodes-unused-images-cleanup --debug > template-file.yaml
+helm template nodes-unused-images-cleanup .\nodes-unused-images-cleanup\ --create-namespace --namespace nodes-unused-images-cleanup --debug
 ```
 
-* Deploy release (set `release name / namespace` as you wish; you can also redirect output in a separate file to check if everything is as expected) :
+* Deploy release (set `release name / namespace` as you wish) :
 
 ```
 helm upgrade --install nodes-unused-images-cleanup .\nodes-unused-images-cleanup\ --create-namespace --namespace nodes-unused-images-cleanup --debug
@@ -107,6 +107,6 @@ warning: couldn't attach to pod/nodes-unused-images-cleanup-sc9qph, falling back
 # 📜 License 📜
 * `Apache 2 Licensed`. See **[LICENSE](https://github.com/itsyndicate/nodes-unused-images-cleanup/blob/main/LICENSE)** for full details.
 
-# 🛠️ Mainteiners 🛠️
+# 🛠️ Maintainers 🛠️
 
 * **[plain5](https://github.com/plain5)**
