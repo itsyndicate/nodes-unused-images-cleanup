@@ -62,13 +62,13 @@ docker build -t ${NAME}:${TAG} .
 * Generate `helm template` before deployment (set `release name / namespace` as you wish) :
 
 ```
-helm template nodes-unused-images-cleanup .\nodes-unused-images-cleanup\ --create-namespace --namespace nodes-unused-images-cleanup --debug
+helm template nodes-unused-images-cleanup ./nodes-unused-images-cleanup/ --create-namespace --namespace nodes-unused-images-cleanup --debug
 ```
 
 * Deploy release (set `release name / namespace` as you wish) :
 
 ```
-helm upgrade --install nodes-unused-images-cleanup .\nodes-unused-images-cleanup\ --create-namespace --namespace nodes-unused-images-cleanup --debug
+helm upgrade --install nodes-unused-images-cleanup ./nodes-unused-images-cleanup/ --create-namespace --namespace nodes-unused-images-cleanup --debug
 ```
 
 # 🔎 Debug 🔎
