@@ -33,7 +33,7 @@ assignees: ''
 
 **Versions**
 
-* Github release version.
+* GitHub release version.
 
 * Kubernetes version.
 
